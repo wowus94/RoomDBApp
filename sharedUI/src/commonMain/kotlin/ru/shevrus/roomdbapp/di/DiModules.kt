@@ -7,11 +7,13 @@ import org.koin.dsl.module
 import ru.shevrus.roomdbapp.data.database.AppDatabase
 import ru.shevrus.roomdbapp.data.database.getDatabaseBuilder
 import ru.shevrus.roomdbapp.data.database.getRoomDatabase
+import ru.shevrus.roomdbapp.data.network.FakeTodoApi
 import ru.shevrus.roomdbapp.data.repository.TodoRepositoryImpl
 import ru.shevrus.roomdbapp.domain.repository.TodoRepository
 import ru.shevrus.roomdbapp.domain.usecase.ClearTableUseCase
 import ru.shevrus.roomdbapp.domain.usecase.GetTableUseCase
 import ru.shevrus.roomdbapp.domain.usecase.InsertTableUseCase
+import ru.shevrus.roomdbapp.domain.usecase.SyncWithServerUseCase
 import ru.shevrus.roomdbapp.presentation.TodoViewModel
 
 val commonModule = module {
@@ -19,6 +21,7 @@ val commonModule = module {
     single { GetTableUseCase(get()) }
     single { InsertTableUseCase(get()) }
     single { ClearTableUseCase(get()) }
+    single { SyncWithServerUseCase(get()) }
 
     factoryOf(::TodoViewModel)
 
@@ -28,9 +31,10 @@ val databaseModule = module {
 
     single { getDatabaseBuilder() }
     single { getRoomDatabase(get()) }
+    single { FakeTodoApi() }
 
     single { get<AppDatabase>().getDao() }
-    single { TodoRepositoryImpl(get()) } bind TodoRepository::class
+    single { TodoRepositoryImpl(get(), get()) } bind TodoRepository::class
 }
 
 fun initKoin(additionalModules: List<Module> = emptyList()) {

@@ -8,5 +8,7 @@ data class TodoEntity(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val text: String
+    val text: String,
+    val isSynced: Boolean = false,
+    val isDeletedLocally: Boolean = false
 )

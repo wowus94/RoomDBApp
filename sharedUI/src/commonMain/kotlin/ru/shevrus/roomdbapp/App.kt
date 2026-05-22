@@ -1,6 +1,8 @@
 package ru.shevrus.roomdbapp
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,26 +45,30 @@ fun App(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Spacer(Modifier.height(16.dp))
 
-        Button(onClick = {
-            todoViewModel.insertTodo(
-                text = "Test ${Clock.System.now()}"
-            )
-        }) {
-            Text("Insert")
-        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = {
+                todoViewModel.insertTodo(text = "Test ${Clock.System.now()}")
+            }) {
+                Text("Insert")
+            }
 
-        Button(onClick = {
-            todoViewModel.clearTable()
-        }) {
-            Text("Delete")
+            Button(onClick = {
+                todoViewModel.clearTable()
+            }) {
+                Text("Clear table")
+            }
+
+
         }
 
         Spacer(Modifier.height(24.dp))
 
-        Text("Todos:")
+        Text("Todos:", style = MaterialTheme.typography.titleMedium)
 
         Spacer(Modifier.height(8.dp))
 
@@ -70,12 +77,18 @@ fun App(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(items = todos, key = { it.id }) { todo ->
-                Text(
-                    text = "${todo.id} — ${todo.text}",
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "${todo.id} — ${todo.text} ")
+
+                    Text(
+                        text = if (todo.isSynced) "✅" else "⏳",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
-
     }
 }
