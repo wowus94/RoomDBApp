@@ -47,6 +47,9 @@ kotlin {
             implementation(libs.multiplatformSettings)
             implementation(libs.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
         }
 
         commonTest.dependencies {
