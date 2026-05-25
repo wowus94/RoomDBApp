@@ -1,30 +1,26 @@
 package ru.shevrus.roomdbapp.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import ru.shevrus.roomdbapp.domain.usecase.GetProductsUseCase
 import ru.shevrus.roomdbapp.domain.usecase.SyncProductsUseCase
+import ru.shevrus.roomdbapp.presentation.util.UiErrorTranslator
 
 class ProductViewModel(
     private val getProductsUseCase: GetProductsUseCase,
-    private val syncProductsUseCase: SyncProductsUseCase
-) : ViewModel() {
-
-    private val _isLoading = MutableStateFlow(false)
-    private val _errorMessage = MutableStateFlow<String?>(null)
+    private val syncProductsUseCase: SyncProductsUseCase,
+    errorTranslator: UiErrorTranslator
+) : BaseViewModel(errorTranslator) {
 
     val uiState: StateFlow<ProductsUiState> = combine(
         getProductsUseCase(),
-        _isLoading,
-        _errorMessage
-    ) { products, isLoading, error ->
-        ProductsUiState(products = products, isLoading = isLoading, errorMessage = error)
+        isLoading,
+        errorMessage
+    ) { products, loading, error ->
+        ProductsUiState(products = products, isLoading = loading, errorMessage = error)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ProductsUiState())
 
     init {
@@ -32,26 +28,9 @@ class ProductViewModel(
     }
 
     fun loadAndSync() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-
-            val result = syncProductsUseCase()
-
-            result.onFailure { exception ->
-                val message = exception.message ?: ""
-                if (message.contains("Unable to resolve host") || message.contains("No address")) {
-                    _errorMessage.value = "Не удалось подключиться к серверу. Проверьте интернет-соединение."
-                } else {
-                    _errorMessage.value = "Произошла непредвиденная ошибка при обновлении каталога."
-                }
-            }
-
-            _isLoading.value = false
-        }
+        safeLaunch(
+            block = { syncProductsUseCase() }
+        )
     }
 
-    fun dismissError() {
-        _errorMessage.value = null
-    }
 }
