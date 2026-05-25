@@ -50,6 +50,13 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.serialization.json)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.coil)
+            implementation(libs.coil.network.ktor)
         }
 
         commonTest.dependencies {
@@ -60,6 +67,11 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.ktor.client.okhttp)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
 
     }

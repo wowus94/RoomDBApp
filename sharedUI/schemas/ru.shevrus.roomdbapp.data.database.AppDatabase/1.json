@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5489a17a4eeedf8463797f79dd7634c3",
+    "identityHash": "c22e85fd5398e5fb769b5801d2f15372",
     "entities": [
       {
-        "tableName": "TodoEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `text` TEXT NOT NULL, `isSynced` INTEGER NOT NULL, `isDeletedLocally` INTEGER NOT NULL)",
+        "tableName": "products",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `price` REAL NOT NULL, `thumbnail` TEXT NOT NULL, `isSynced` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,8 +15,26 @@
             "notNull": true
           },
           {
-            "fieldPath": "text",
-            "columnName": "text",
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnail",
+            "columnName": "thumbnail",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -25,16 +43,10 @@
             "columnName": "isSynced",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "isDeletedLocally",
-            "columnName": "isDeletedLocally",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -43,7 +55,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5489a17a4eeedf8463797f79dd7634c3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c22e85fd5398e5fb769b5801d2f15372')"
     ]
   }
 }

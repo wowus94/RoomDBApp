@@ -7,23 +7,19 @@ import org.koin.dsl.module
 import ru.shevrus.roomdbapp.data.database.AppDatabase
 import ru.shevrus.roomdbapp.data.database.getDatabaseBuilder
 import ru.shevrus.roomdbapp.data.database.getRoomDatabase
-import ru.shevrus.roomdbapp.data.network.FakeTodoApi
-import ru.shevrus.roomdbapp.data.repository.TodoRepositoryImpl
-import ru.shevrus.roomdbapp.domain.repository.TodoRepository
-import ru.shevrus.roomdbapp.domain.usecase.ClearTableUseCase
-import ru.shevrus.roomdbapp.domain.usecase.GetTableUseCase
-import ru.shevrus.roomdbapp.domain.usecase.InsertTableUseCase
-import ru.shevrus.roomdbapp.domain.usecase.SyncWithServerUseCase
-import ru.shevrus.roomdbapp.presentation.TodoViewModel
+import ru.shevrus.roomdbapp.data.network.ProductApi
+import ru.shevrus.roomdbapp.data.repository.ProductRepositoryImpl
+import ru.shevrus.roomdbapp.domain.repository.ProductRepository
+import ru.shevrus.roomdbapp.domain.usecase.GetProductsUseCase
+import ru.shevrus.roomdbapp.domain.usecase.SyncProductsUseCase
+import ru.shevrus.roomdbapp.presentation.ProductViewModel
 
 val commonModule = module {
 
-    single { GetTableUseCase(get()) }
-    single { InsertTableUseCase(get()) }
-    single { ClearTableUseCase(get()) }
-    single { SyncWithServerUseCase(get()) }
+    factory { GetProductsUseCase(get()) }
+    factory { SyncProductsUseCase(get()) }
 
-    factoryOf(::TodoViewModel)
+    factoryOf(::ProductViewModel)
 
 }
 
@@ -31,10 +27,10 @@ val databaseModule = module {
 
     single { getDatabaseBuilder() }
     single { getRoomDatabase(get()) }
-    single { FakeTodoApi() }
+    single { ProductApi() }
+    single { ProductRepositoryImpl(get(), get()) } bind ProductRepository::class
 
     single { get<AppDatabase>().getDao() }
-    single { TodoRepositoryImpl(get(), get()) } bind TodoRepository::class
 }
 
 fun initKoin(additionalModules: List<Module> = emptyList()) {
