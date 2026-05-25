@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -32,6 +33,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -63,6 +65,24 @@ fun App(
 
     val pullToRefreshState = rememberPullToRefreshState()
 
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val totalItems = layoutInfo.totalItemsCount
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
+
+            lastVisibleItem.index >= totalItems - 5
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && state.products.isNotEmpty()) {
+            productViewModel.loadNextPage()
+        }
+    }
+
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let { error ->
             val result = snackbarHostState.showSnackbar(
@@ -72,7 +92,7 @@ fun App(
             )
 
             if (result == SnackbarResult.ActionPerformed) {
-                productViewModel.loadAndSync()
+                productViewModel.loadNextPage()
             } else {
                 productViewModel.dismissError()
             }
@@ -108,7 +128,7 @@ fun App(
                         Spacer(Modifier.height(16.dp))
                         Text(state.errorMessage!!, textAlign = TextAlign.Center)
                         Spacer(Modifier.height(16.dp))
-                        Button(onClick = { productViewModel.loadAndSync() }) {
+                        Button(onClick = { productViewModel.loadNextPage() }) {
                             Text("Повторить попытку")
                         }
                     }
@@ -126,16 +146,28 @@ fun App(
                     PullToRefreshBox(
                         isRefreshing = state.isLoading,
                         state = pullToRefreshState,
-                        onRefresh = { productViewModel.loadAndSync() },
+                        onRefresh = { productViewModel.refreshAll() },
                         modifier = Modifier.fillMaxSize()
                     ) {
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(items = state.products, key = { it.id }) { product ->
                                 ProductCard(product)
+                            }
+
+                            if (state.isLoading && state.products.isNotEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                                    }
+                                }
                             }
                         }
                     }

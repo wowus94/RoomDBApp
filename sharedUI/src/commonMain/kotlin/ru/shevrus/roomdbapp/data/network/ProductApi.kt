@@ -8,9 +8,9 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import ru.shevrus.roomdbapp.data.network.model.ProductDto
 import ru.shevrus.roomdbapp.data.network.model.ProductResponse
 
 class ProductApi {
@@ -30,10 +30,14 @@ class ProductApi {
     private val baseUrl = "https://dummyjson.com"
     var shouldThrowError = false
 
-    suspend fun fetchProducts(): List<ProductDto> {
+    suspend fun fetchProducts(limit: Int, skip: Int): ProductResponse {
         if (shouldThrowError) throw Exception("Simulated network failure")
 
-        val response: ProductResponse = httpClient.get("$baseUrl/products").body()
-        return response.products
+        val response: ProductResponse = httpClient.get("$baseUrl/products") {
+            parameter("limit", limit)
+            parameter("skip", skip)
+        }.body()
+
+        return response
     }
 }

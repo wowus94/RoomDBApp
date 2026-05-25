@@ -21,11 +21,14 @@ class ProductRepositoryImpl(
         }
     }
 
-    override suspend fun syncProducts(): Result<Unit> {
+    override suspend fun syncProducts(limit: Int, skip: Int): Result<Int> {
         return try {
-            val remoteDtos = api.fetchProducts()
-            productDao.insertProducts(remoteDtos.map { it.toEntity() })
-            Result.success(Unit)
+
+            val response = api.fetchProducts(limit = limit, skip = skip)
+
+            productDao.insertProducts(response.products.map { it.toEntity() })
+
+            Result.success(response.total)
         } catch (e: Exception) {
             Result.failure(e.toAppError())
         }

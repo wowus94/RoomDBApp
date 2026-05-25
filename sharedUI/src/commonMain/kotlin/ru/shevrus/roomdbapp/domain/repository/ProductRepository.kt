@@ -5,5 +5,5 @@ import ru.shevrus.roomdbapp.domain.model.Product
 
 interface ProductRepository {
     fun getProducts(): Flow<List<Product>>
-    suspend fun syncProducts(): Result<Unit>
+    suspend fun syncProducts(limit: Int, skip: Int): Result<Int>
 }

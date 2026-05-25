@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProductResponse(
-    val products: List<ProductDto>
+    val products: List<ProductDto>,
+    val total: Int
 )
 
 @Serializable
