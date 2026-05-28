@@ -9,9 +9,13 @@ import platform.UIKit.UIViewController
 import platform.UIKit.setStatusBarStyle
 import ru.shevrus.roomdbapp.di.initKoin
 
+private val koinInit: Unit by lazy {
+    initKoin(additionalModules = emptyList())
+}
+
 fun MainViewController(): UIViewController = ComposeUIViewController {
 
-    initKoin(additionalModules = emptyList())
+    koinInit
     App(onThemeChanged = { ThemeChanged(it) })
 }
 

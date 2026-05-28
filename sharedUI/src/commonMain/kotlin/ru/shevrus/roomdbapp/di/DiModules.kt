@@ -1,5 +1,6 @@
 package ru.shevrus.roomdbapp.di
 
+import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -36,7 +37,7 @@ val databaseModule = module {
 }
 
 fun initKoin(additionalModules: List<Module> = emptyList()) {
-    org.koin.core.context.startKoin {
+    startKoin {
         modules(
             commonModule,
             databaseModule,

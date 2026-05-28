@@ -16,13 +16,10 @@ import ru.shevrus.roomdbapp.di.initKoin
 class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContext = applicationContext
-
-        initKoin()
 
         enableEdgeToEdge()
         setContent { 
-            App(onThemeChanged = { ThemeChanged(it) }) 
+            App(onThemeChanged = { ThemeChanged(it) })
         }
     }
 }
