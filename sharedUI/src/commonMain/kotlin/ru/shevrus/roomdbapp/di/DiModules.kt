@@ -13,6 +13,7 @@ import ru.shevrus.roomdbapp.data.repository.ProductRepositoryImpl
 import ru.shevrus.roomdbapp.domain.repository.ProductRepository
 import ru.shevrus.roomdbapp.domain.usecase.GetProductsUseCase
 import ru.shevrus.roomdbapp.domain.usecase.SyncProductsUseCase
+import ru.shevrus.roomdbapp.domain.usecase.ChangeFavoriteStatusUseCase
 import ru.shevrus.roomdbapp.presentation.ProductViewModel
 import ru.shevrus.roomdbapp.presentation.util.UiErrorTranslator
 
@@ -20,6 +21,7 @@ val commonModule = module {
 
     factory { GetProductsUseCase(get()) }
     factory { SyncProductsUseCase(get()) }
+    factory { ChangeFavoriteStatusUseCase(get()) }
 
     factoryOf(::ProductViewModel)
     factoryOf(::UiErrorTranslator)

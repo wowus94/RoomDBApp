@@ -1,7 +1,8 @@
 package ru.shevrus.roomdbapp.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import ru.shevrus.roomdbapp.data.database.FavoriteEntity
 import ru.shevrus.roomdbapp.data.database.ProductDao
 import ru.shevrus.roomdbapp.data.mapper.toAppError
 import ru.shevrus.roomdbapp.data.mapper.toDomain
@@ -16,8 +17,12 @@ class ProductRepositoryImpl(
 ) : ProductRepository {
 
     override fun getProducts(): Flow<List<Product>> {
-        return productDao.getAllProductsAsFlow().map { entities ->
-            entities.map { it.toDomain() }
+        return productDao.getAllProductsAsFlow().combine(
+            productDao.getFavoriteIdsFlow()
+        ) { entities, favoriteIds ->
+            entities.map { entity ->
+                entity.toDomain(isFavorite = entity.id in favoriteIds)
+            }
         }
     }
 
@@ -31,6 +36,14 @@ class ProductRepositoryImpl(
             Result.success(response.total)
         } catch (e: Exception) {
             Result.failure(e.toAppError())
+        }
+    }
+
+    override suspend fun toggleFavorite(productId: Long, isFavorite: Boolean) {
+        if (isFavorite) {
+            productDao.insertFavorite(FavoriteEntity(productId))
+        } else {
+            productDao.deleteFavorite(productId)
         }
     }
 }

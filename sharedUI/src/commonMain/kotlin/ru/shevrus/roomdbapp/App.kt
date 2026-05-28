@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.koinInject
 import roomdbapp.sharedui.generated.resources.Res
-import roomdbapp.sharedui.generated.resources.ic_favorite
 import roomdbapp.sharedui.generated.resources.ic_list
+import roomdbapp.sharedui.generated.resources.ic_not_favorite_star
 import ru.shevrus.roomdbapp.navigation.Screen
 import ru.shevrus.roomdbapp.presentation.ProductViewModel
 import ru.shevrus.roomdbapp.presentation.screens.FavoritesScreen
@@ -45,7 +45,12 @@ fun App(
                 NavigationBarItem(
                     selected = currentScreen == Screen.Favorites,
                     onClick = { currentScreen = Screen.Favorites },
-                    icon = { Icon(imageVector = vectorResource(Res.drawable.ic_favorite), null) },
+                    icon = {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.ic_not_favorite_star),
+                            null
+                        )
+                    },
                     label = { Text("Избранное") }
                 )
             }
@@ -64,7 +69,8 @@ fun App(
                 paddingValues = PaddingValues(
                     top = paddingValues.calculateTopPadding(),
                     bottom = paddingValues.calculateBottomPadding()
-                )
+                ),
+                productViewModel = productViewModel
             )
         }
     }
